@@ -1,0 +1,21 @@
+
+ctc = input ("Enter current pkg: ")
+per = input ("Enter the expected per: ")
+ctc = float(ctc)
+per = float(per)
+#print ("The number you entered is: ", test_number)
+
+def calc(ctc,per):
+	per = 1 + per/100
+	fin = ctc*per
+	fin = round(fin,2)
+	gros= fin - 1
+	mnt=(gros/12)*100
+	mnt = (round(mnt,2))
+	inc = mnt - 65
+	inc = round(inc,2)
+	tmnt= mnt - 5
+	print('So the final sal will be {} L  , the gross will be {} L , you get around {} K per month and the increment will be {} K'.format(fin,gros,mnt,inc))
+	print('After the tax deductions you may get around {} K'.format(tmnt))
+
+calc(ctc,per) 
