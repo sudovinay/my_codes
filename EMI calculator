@@ -1,0 +1,17 @@
+
+l = input ("Enter how much you would like to apply in full number(for ex: 12000) :")
+r = input ("Enter the rate of interest(for ex: 9.2) :")
+y = input ("Total number of years that you would like to pay interest for :")
+
+l = float(l)
+r = float(r)
+y = float(y)
+
+m = y*12
+i = r/1200
+k = (1+i)**m
+s = (k/(k-1))
+
+emi = (l*i*s)
+emi = (round(emi,2))
+print('your monthly installment would be {} /-'.format(emi))
