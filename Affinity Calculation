@@ -1,0 +1,20 @@
+BA
+
+with x1 as (with w as (select x.email, x.brand , x.aff, row_number () over (partition by x.email order by x.aff desc) as rnk from 
+( select r.email,r.brand,r.aff , sum(r.aff) over (partition by r.email) from ( select q.email,q.brand,sum(q.aff) as aff from 
+( select chk._visid as email,chk.brand as brand,chk.p_chk as aff from (select * from (with a as (select _visid, unnest(string_to_array(product_id, ',')) as pid 
+from  <purchse_table> where _epoch > '2019-01-01' and _epoch < '2019-10-10' ), b as  (select id, brand from <id_brand_mapping>), 
+c as (select count(*) over (partition by b.brand, a._visid) as brand_rank, count(*) over (partition by a._visid) as total_rank , a._visid, b.brand from a 
+inner join b on a.pid = b.id where a.pid is not null and a.pid != '') select row_number() over (partition by c._visid, c.brand) as rnk_chk, c._visid, c.brand, 
+round(c.brand_rank::numeric/c.total_rank,4)*80 as p_chk from c) as inner_query where rnk_chk = 1) chk group by 1,2,3 union all  select  ac._visid as email,ac.brand 
+as brand,ac.p_ac as aff from (select * from (with a as (select _visid, unnest(string_to_array(product_id, ',')) as pid from  <addtocart_table>
+where _epoch > '2019-01-01' and _epoch < '2019-10-10' ), b as  (select id, brand from <id_brand_mapping>), c as (select count(*) over 
+(partition by b.brand, a._visid) as brand_rank, count(*) over (partition by a._visid) as total_rank , a._visid, b.brand from a inner join b 
+on a.pid = b.id where a.pid is not null and a.pid != '') select row_number() over (partition by c._visid, c.brand) as rnk_ac, c._visid, c.brand,
+round(c.brand_rank::numeric/c.total_rank,4)*20 as p_ac from c) as inner_query where rnk_ac = 1) ac group by 1,2,3 ) q group by 1,2 order by 1) r ) x 
+where x.sum > 99 ) select w.email, max(w.brand) filter (where w.rnk = '1') as b1 , max(w.brand) filter (where w.rnk = '2') as b2, max(w.brand) filter
+(where w.rnk = '3') as b3 , max(w.brand) filter (where w.rnk = '4') as b4  from w group by 1 order by 5 desc ), x2 as (select _visid,property_s from 
+<user_property_table> where property_name ='_uniqid' and _epoch > '2019-01-01') select x2.property_s,coalesce(x1.b1,'NA') as b1,coalesce(x1.b2,'NA')
+as b2,coalesce(x1.b3,'NA') as b3,coalesce(x1.b4,'NA') as b4 from x2 join x1 on x1.email=x2._visid group by 1,2,3,4,5 limit 10
+
+
