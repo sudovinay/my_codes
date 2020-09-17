@@ -3,7 +3,7 @@ import sys
 import csv
 from datetime import date
 
-conn = psycopg2.connect(database = "gamooga", user = "implgmg", password = "sparrow democratic affordable dependent fountain captured", host = "dm1.gamooga.com", port = "54321")
+conn = psycopg2.connect(database = "gamooga", user = "vinay", password = "password", host = "the host", port = "54321")
 print ("Opened database successfully")
 
 cur = conn.cursor()
@@ -15,7 +15,7 @@ outputquery= "COPY ({0}) TO STDOUT WITH CSV HEADER".format(query)
 
 today=date.today()
 
-fname= '/root/nykaa/cleanup/uniqid{}.csv'.format(today)
+fname= 'path/cleanup/uniqid{}.csv'.format(today)
 
 with open(fname, 'w') as f:
     cur.copy_expert(outputquery, f)
