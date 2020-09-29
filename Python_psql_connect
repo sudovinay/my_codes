@@ -3,12 +3,12 @@ import sys
 import csv
 from datetime import date
 
-conn = psycopg2.connect(database = "gamooga", user = "vinay", password = "password", host = "the host", port = "54321")
+conn = psycopg2.connect(database = "database_name", user = "vinay", password = "password", host = "the host", port = "54321")
 print ("Opened database successfully")
 
 cur = conn.cursor()
 
-query = ''' with j as ( with a as ( select _visid,property_s,max(_epoch) from gmg_96148074.visitor_properties where _epoch > '2017-01-01' and property_name='_uniqid' and property_s is not null group by 1,2), b as (select _visid,property_s,min(_epoch) from gmg_96148074.visitor_properties where property_name='_uniqid' and property_s is not null group by 1,2 having min(_epoch at time zone 'UTC+5:30') > (current_date - interval '2 day')) select a.property_s from a join b on a.property_s=b.property_s and b.min > a.max and a._visid != b._visid ) , t as ( select property_s,array_agg(a._visid order by a._epoch ) as vid,case when string_agg(b._visid,',' order by b._epoch ) like '%,%' then split_part(string_agg(b._visid,',' order by b._epoch ),',',1) else string_agg(b._visid,',' order by b._epoch ) end as vid_ss from (select * from (select _visid, _epoch, property_s, row_number() over (partition by _visid order by _epoch ) as rnk from gmg_96148074.visitor_properties where property_name = '_uniqid'  and _epoch > '2017-01-01') as a where a.rnk = 1 and a.property_s is not null)a left join (select _visid,_epoch from (select _visid,_epoch,row_number() over (partition by _visid order by _epoch ) as rnk from gmg_96148074.started_session where _epoch > '2019-01-01')a where rnk=1) as b on a._visid=b._visid group by 1 having count(*)>1  ) select t.* from t join j on j.property_s=t.property_s  '''
+query = ''' select * from tableA limit 100  '''
 
 
 outputquery= "COPY ({0}) TO STDOUT WITH CSV HEADER".format(query)
